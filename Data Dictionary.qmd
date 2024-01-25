@@ -1,0 +1,226 @@
+---
+params:
+  directory: "data"
+title: Data Dictionary
+date: today
+date-format: long
+toc: true
+toc-title: Included Datasets
+execute: 
+  echo:    false
+  error:   false
+  warning: false
+format: 
+  pdf:
+    classoption: [landscape]
+    margin-left:   "75pt"
+    margin-right:  "75pt"
+    include-in-header:   latex/header.tex
+    include-before-body: latex/before_body.tex
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: Environment Setup
+#| include: false
+
+library(fs)
+library(scales)
+library(labelled)
+library(tidyverse)
+library(kableExtra)
+
+fn_summarize_data <- function(raw_data){
+  
+  # Using dplyr::lst so that I can reference other list elements by name
+  lst(
+    # Get variable types
+    var_type  =
+      raw_data |>
+      map(class) |>
+      enframe("variable", "type") |>
+      unnest(type) |>
+      summarize(.by = variable, type = str_flatten_comma(type)),
+    
+    # Get variable labels
+    var_label = 
+      raw_data |> labelled::generate_dictionary(details = "none"),
+    
+    # Check if any variables are date/datetime values
+    # If so, then get the range of the dates
+    var_date  =
+      if (var_type$type |> str_detect("POSIX|Date") |> any()) {
+        raw_data |>
+          summarize(across(
+            .cols = where(\(x) is.Date(x) || is.POSIXt(x)),
+            .fns  = \(x) x |> range(na.rm = T) |> str_flatten(" -- "))) |>
+          pivot_longer(everything(), names_to = "variable", values_to = "values_d")
+      } else {
+        tibble(variable = character(), values_d = character())
+      },
+    
+    # Check if any variables are factors
+    # If so, then get the distinct values of the factor
+    var_category  =
+      if (var_type$type |> str_detect("factor") |> any()) {
+        raw_data |>
+          summarize(across(where(is.factor), \(x) x |> unique() |> str_flatten_comma())) |>
+          pivot_longer(everything(), names_to = "variable", values_to = "values_c")
+      } else {
+        tibble(variable = character(), values_c = character())
+      },
+    
+    # Check if any variables are numeric
+    # If so, then get the mean, standard deviation, and range of the values
+    var_numeric =
+      if (var_type$type |> str_detect("factor") |> any()) {
+        raw_data |>
+          summarize(across(
+            .cols = where(is.numeric), 
+            .fns  = \(x) str_glue("mean:{a}; sd:{b}; range:{c}",
+                                  a = mean(x, na.rm = T) |> round(2),
+                                  b = sd(x, na.rm = T) |> round(2),
+                                  c = range(x, na.rm = T) |> round(2) |> str_flatten("-")))) |>
+          pivot_longer(everything(), names_to = "variable", values_to = "values_n")
+      } else {
+        tibble(variable = character(), values_n = character())
+      }) |>
+    
+    # Using purrr::reduce, use left_join on all elements of this list
+    reduce(.f = \(x, y) left_join(x, y, join_by(variable))) |>
+    rename(variable_order = pos) |>
+    relocate(variable_order, .before = 1) |> 
+    
+    # Combine all summary values, filling in NA values horizontally with coalesce
+    mutate(
+      summary_values = coalesce(values_c, values_n, values_d) |> replace_na(""),
+      label = label |> replace_na("")) |>
+    select(-starts_with("values_")) 
+}
+
+fn_latex_table <- function(
+    summary_table, 
+    data_name, 
+    data_nrow,
+    data_ncol){
+  
+  table_title <-   
+    str_glue(
+      "Summary of '{d}'", 
+      d = data_name |> escape_latex())
+  
+  summary_table |> 
+    kbl(
+      caption   = table_title,
+      longtable = T,
+      booktabs  = T,
+      linesep   = "\\addlinespace",
+      align     = c("c", "l", "l", "l", "l"),
+      col.names = c("Order", "Variable", "Type", "Label", "Summary")) |>
+    kable_styling(
+      position           = "center",
+      font_size          = 10,
+      latex_options      = c("striped", "repeat_header"),
+      repeat_header_text = NULL) |>
+    column_spec(1, width =  "2em", latex_valign = "m") |>
+    column_spec(2, width = "10em", latex_valign = "m") |>
+    column_spec(3, width =  "5em", latex_valign = "m") |>
+    column_spec(4, width = "15em", latex_valign = "m") |>
+    column_spec(5, width = "25em", latex_valign = "m") 
+}
+
+# Borrowed from Knitr
+escape_latex <- function(x, newlines = FALSE, spaces = FALSE) {
+  x = gsub('\\\\', '\\\\textbackslash', x)
+  x = gsub('([#$%&_{}])', '\\\\\\1', x)
+  x = gsub('\\\\textbackslash', '\\\\textbackslash{}', x)
+  x = gsub('~', '\\\\textasciitilde{}', x)
+  x = gsub('\\^', '\\\\textasciicircum{}', x)
+  if (newlines) x = gsub('(?<!\n)\n(?!\n)', '\\\\\\\\', x, perl = TRUE)
+  if (spaces) x = gsub('  ', '\\\\ \\\\ ', x)
+  x
+}
+```
+
+
+```{r}
+#| label: Data Prep
+#| include: false
+
+if (interactive()){
+  params <- list(directory = "data")
+}
+
+data_list <-
+  dir_ls(params$directory) |>
+  map(read_rds) |>
+  enframe(
+    name = "filepath",
+    value = "data") |>
+  mutate(
+    data_summary = map(data, fn_summarize_data),
+    data_nrow    = map_int(data, nrow),
+    data_ncol    = map_int(data, ncol),
+    data_name    = filepath |> path_file() |> fs::path_ext_remove()) |> 
+  select(-data)
+
+display_directory <- 
+  params$directory |> 
+  path_abs() |> 
+  word(start = -2, end = -1, sep = "/")
+```
+
+<!-- Modify Report Style -->
+\setlength{\headheight}{50pt}
+\setlength{\footheight}{50pt}
+\pagestyle{fancy}
+
+\lhead{\small{Data Directory: '{`r display_directory`}'}}
+\chead{}
+\rhead{PHUSE 2024}
+
+\lfoot{}
+\cfoot{}
+\rfoot{\small{Page \thepage\ of\ \pageref{LastPage}}}
+
+```{r}
+#| label: Loop Output
+#| results: asis
+
+for (i in 1:nrow(data_list)) {
+  
+  loop_input <- 
+    data_list |> 
+    slice(i) |> 
+    flatten()
+  
+  table_footer <-
+    str_glue(
+      "\\lfoot{{
+        \\small{{
+          Table {i}: '{n}' has {r} rows and {c} columns
+        }}
+      }}",
+      n = loop_input$data_name |> escape_latex(),
+      r = loop_input$data_nrow |> number(big.mark = ","),
+      c = loop_input$data_ncol)
+    
+  cat("\\newpage")
+  cat(table_footer)
+  cat("\n")
+  paste("# Dataset:", loop_input$data_name) |> cat()
+  cat("\n")
+  
+  loop_output <- 
+    fn_latex_table(
+      loop_input$data_summary,
+      loop_input$data_name,
+      loop_input$data_nrow,
+      loop_input$data_ncol)
+  
+  print(loop_output)
+  
+}
+```
+

@@ -1,0 +1,160 @@
+---
+title: "Phuse 2024"
+format: html
+editor: source
+---
+
+# Key Dates
+
+### Jan 8, 2024
+
+- Provide draft poster
+- Provide biography and photo
+- Complete copyright grant form
+
+### Jan 29, 2024
+
+- Final paper
+- Final poster
+
+### Feb 25, 2024
+
+- Attend speakers meeting on Sunday from 4-5p
+
+# Presentation Notes
+
+- Posters are outlines. Keep information simple and easy to follow
+- Provide more detail in paper
+- Posters using dimensions of 3 x 3.5 ft, with 60mm margins on all sides
+- Posters in 300 dpi PDF format
+- Title at top, large easy to read font
+- Poster number at top
+- Author and email address included
+- Avoid excessive and small text
+- Use pictures, images, diagrams in high resolution
+- Include QR code to link to other important information
+- Use Phuse logo on poster
+
+# Paper Notes
+
+- Single spaced, one column
+- Include page numbers on each page
+- Footnotes, source notes, references at end of paper (not end of page)
+- Limit of 12 pages
+- Include presentation number
+
+- Paper number centered above title
+- Title is centered on top of first page
+- Author, Company, City, Country centered under title
+
+- Include Abstract and Introduction as level 1 headers (using # in markdown)
+- Then include other level 1 and 2 headers as needed
+- Include 'conclusion', 'references', acknowledgements', 'recommended reading' and 'contact information' as level 1 headers at the end of the paper.
+- Contact information should include name, company, email
+
+- Modify document properties to include "{paper number} - PHUSE Connect 2024"
+- Name the file "PAP_{paper number}.pdf"
+
+
+# Presentation Details
+
+- Poster number PP06
+- Presentation date 2/27/2024 5:30-7p
+
+# Presentation Abstract
+
+Getting Started with Quarto
+
+Clinical reports have their own defined reporting styles, and that is well documented. But what about using Quarto Books or Quarto Documents to easily maintain metadata regarding clinical studies?  This could include querying your data for quality control, keeping up-to-date listings of all the variables and variable summaries, or including interactive tables and plots to help researchers explore data for new insights. Quarto is the next generation of dynamic and repeatable reporting with R, blending code, visualizations, tables, and documentation.  With the ability to create and reuse custom templates, maintaining the look and feel of clinical tables, figures, and listings has never been easier. In this poster, we will explore the transformative capabilities of Quarto with a brief introduction to the creation and use of custom templates.
+
+# Development
+
+quarto pdf 
+
+- documentclass
+- classoption
+- geometry
+- includes
+- template
+- default template https://github.com/jgm/pandoc-templates/blob/master/default.latex
+
+List of PDF Options
+- https://quarto.org/docs/reference/formats/pdf.html
+- fontsize
+
+# References
+
+- https://stackoverflow.com/questions/30972442/how-to-separate-title-page-and-table-of-content-page-from-knitr-rmarkdown-pdf
+- https://stackoverflow.com/questions/66225222/how-to-employ-a-custom-beamer-theme-template-and-includes-in-a-beamer-presentat
+
+```{r}
+#| eval: false
+quarto::quarto_render(
+  input = "Data Dictionary.qmd", 
+  execute_params = list(directory = "data"))
+```
+
+https://pkgs.rstudio.com/rticles/ for custom latex templates
+
+Main goal: 
+- generating dynamic markdown headers and output with many 'cat' and latex commands
+- changing layouts using rticles, and digging for more custom templates
+
+- Zoom out, using given table generation function
+- focus on overview of various custom template options and use cases
+- rticles, lua filters, custom xml template, or docx template
+- why would we want custom templates
+- using yml quarto file (to what end?)
+    - what does post-render do?
+    - what is csl file for references?
+- include screenshot with arrows?
+- reference-doc: template.docx
+    - filter: -.../filter1.lua, -extension.yml, ...
+- how does quarto render documents, and where do templates make their modifications?
+
+
+# Poster Draft
+
+- 3 x 3.5 feet, 60mm margins, 300dpi
+- Title, Poster Number, Phuse Logo, Name, Email, QR Code
+    - QR code links to GitHub page with more information?
+    - QR code is 5 inches
+
+What is the key takeaway?
+- Quarto makes it easy to *repeatedly* create complex reports, and *custom pre-defined templates* make it easy to ensure those reports match the specific audience for that report
+
+Notes
+- Embrace negative space, we're designing a billboard not a legal contract
+- Key takeaway takes up 80% of the poster
+- On left 10% margin, include title, author, link, intro, methods, results, discussion. this is for the silent reader
+- On right 10% margin, include charts and tables and supporting material
+
+Colors
+- green for study materials
+- blue for theory
+- red for methods
+- yellow for interventions
+
+- poster inspiration: https://www.youtube.com/watch?v=SYk29tnxASs
+
+- Want to emphasize speed and ease of use, find colors for that
+- Find image to emphasize time saved with repeated reports
+- This is the tech demo path, so don't make things up
+- Find creative flair to indicate saved time with repeated reports
+- Find creative flair for template gridlines that can be ignored in background 
+- 30 seconds of attention, like a plaque at a museum or a blurb about author intent
+
+- If content of text box is more than 2 lines, DO NOT CENTER IT. Center aligned text is harder to read
+
+- Don't put things on poster that people will ignore
+- People will ignore most things
+
+- Icons from thenounproject.com
+- Get graphics from vectorstock.com (for $1)
+- Create figures at biorender.com
+- Search "posters" and "graphs" at dribble.com
+- RMD template for poster: https://github.com/brentthorne/posterdown
+- Create a QR code at https://www.qrcode-monkey.com/
+- Create a multi-page link at linktr.ee
+
+Does quarto have a pdf poster option?

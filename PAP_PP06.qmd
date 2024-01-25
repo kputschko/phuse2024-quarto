@@ -45,7 +45,6 @@ Clinical reports have their own defined reporting styles, and that is well docum
 
 Quarto is the next generation of R Markdown, and is language independent. It works within the R framework, but also with Python, Julia, and Observable. It can work also work with Jupyter Notebooks.  Quarto makes it easy to create reports that are easily updated to reflect changes in source files, data, or analyses. 
 
-
 There are default templates that Quarto will use for your chosen output format, and are good enough for many use cases. However, when you want to customize the output to conform to your personal standards, or your organization's standards, then you will have to either modify these default templates to match your ideal output, or you will have to provide an entirely new template for Quarto to use. 
 
 ## A Basic Example

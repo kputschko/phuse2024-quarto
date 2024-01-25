@@ -152,7 +152,7 @@ For a rough demonstration of how this process can work, I've created a function 
 - Label
 - Listing of distinct values for categorical variables, or mean, standard deviation, and range for numeric variables
 
-You can see the definition of this function for yourself at the [Github page](LINKPLEASE) for this project. 
+You can see the definition of this function for yourself at the [Github page](https://github.com/kputschko/phuse2024-quarto/blob/77695c4bbcdf96fc0451d3abd002b21b446f4b44/Data%20Dictionary.qmd#L34) for this project. 
 
 ## Template Modifications
 
@@ -237,7 +237,7 @@ print(loop_output)
 
 These `cat` functions will be converted to raw LaTeX code where we first create a new page for each iteration of the loop, followed by placement of the table footer for data being summarized in that iteration. Then `\n` is used to create a new line in the code.  I use `paste` here to create the Quarto markdown header for the data set being used in the iteration, followed by another `\n` for an empty line in the code.
 
-Lastly, the actual summary table (created with the `fn_latex_table` function that you can see [here](LINKPLEASE)) is printed with the `print` command. It is important in this case to use `print` to ensure the LaTeX table is explicitly printed in its LaTeX format, and not to the console as R output.
+Lastly, the actual summary table (created with the `fn_latex_table` function that you can see [here](https://github.com/kputschko/phuse2024-quarto/blob/77695c4bbcdf96fc0451d3abd002b21b446f4b44/Data%20Dictionary.qmd#L102)) is printed with the `print` command. It is important in this case to use `print` to ensure the LaTeX table is explicitly printed in its LaTeX format, and not to the console as R output.
 
 ## Results
 
@@ -245,7 +245,7 @@ All of that leads to the creation of our final data dictionary in PDF format, wi
 
 ![A Dynamic Summary Table](images/table.png)
 
-You can see the full PDF report [here](LINKPLEASE).
+You can see the full PDF report [here](https://github.com/kputschko/phuse2024-quarto/blob/main/Data-Dictionary.pdf).
 
 # Conclusion
 
